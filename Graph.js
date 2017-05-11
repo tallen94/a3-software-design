@@ -101,12 +101,12 @@ let Graph = function(id, width, height) {
   }
 
   g.updateNodes = function() {
-    node.merge(node)
+    node = node.merge(node)
     return this
   }
 
   g.updateLinks = function() {
-    link.merge(link)
+    link = link.merge(link)
     return this
   }
 
