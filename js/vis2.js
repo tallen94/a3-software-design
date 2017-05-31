@@ -1,9 +1,10 @@
-let vis2 = function() {
+let vis2 = function(colors) {
 
   let svg = d3.select('#vis2')
     .append('svg')
 
   let mbs = MultiBarScatter()
+  mbs = mbs.colors(colors)
   let date
 
   let vis = function(_d, call) {

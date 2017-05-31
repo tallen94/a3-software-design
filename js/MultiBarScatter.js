@@ -24,7 +24,9 @@ let MultiBarScatter = function() {
   let svg, g, xAxisG, yAxisG, xAxisText, yAxisText, userCount,
     xAxis, yAxis, yScale, xScale
 
-  // let tip = d3.tip().attr('class', 'd3-tip')
+  let colors
+
+  let tip = d3.tip().attr('class', 'd3-tip')
 
   let mbs = function(selection) {
     selection.each(function(d) {
@@ -56,8 +58,8 @@ let MultiBarScatter = function() {
         .attr('transform', 'translate(' + (margin.left + drawWidth / 2) + ',' + (drawHeight + margin.top + 40) + ')')
         .attr('class', 'title');
 
-      userCount = svg.append('text')
-        .attr('transform', 'translate(' + margin.left + ',20)')
+      userCount = d3.select('.date-select')
+        .append('text')
         .attr('class', 'count')
 
       xAxis = d3.axisBottom()
@@ -85,8 +87,9 @@ let MultiBarScatter = function() {
   mbs.draw = function() {
     var key = metric1 + '|' + metric2
     // setUserCount(data[prevDate].profiles.length, data[date].profiles.length)
+    userCount.text('Total Users: ' + data.profiles.length)
     mbs.visDraw[key]()
-    bars.exit()
+      .exit()
       .transition()
       .duration(500)
       .delay(function(d, i) {
@@ -153,8 +156,8 @@ let MultiBarScatter = function() {
         .attr('x', function(d) {
           return xScale(d['user_title'])
         })
-        // .on('mouseover', tip.show)
-        // .on('mouseout', tip.hide)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
         .merge(bars)
         .transition()
         .duration(500)
@@ -168,12 +171,15 @@ let MultiBarScatter = function() {
         .attr('y', function(d) {
           return yScale(+d['score']) - 3
         })
+        .attr('fill', function(d) {
+          return colors(d['user_title'])
+        })
 
       // Add tip
-      // tip.html(function(d) {
-      //     return d.key;
-      // });
-      // g.call(tip);
+      tip.html(function(d) {
+          return d.key;
+      });
+      g.call(tip);
       return bars
     }, 
     'registration_date|pop_score': function() {
@@ -194,32 +200,35 @@ let MultiBarScatter = function() {
         return d.username
       });
       bars.enter().append('rect')
-        .attr('width', 5)
-        .attr('height', 3)
+        .attr('width', 8)
+        .attr('height', 6)
         .attr('x', function(d) {
           return xScale(new Date(+d['registration_date']))
         })
-        // .on('mouseover', tip.show)
-        // .on('mouseout', tip.hide)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
         .merge(bars)
         .transition()
         .duration(500)
         .delay(function(d, i) {
           return i * 3
         })
-        .attr('width', 5)
+        .attr('width', 8)
         .attr('x', function(d) {
           return xScale(new Date(+d['registration_date']))
         })
         .attr('y', function(d) {
           return yScale(+d['score'])
         })
+        .attr('fill', function(d) {
+          return colors(d['user_title'])
+        })
 
       // Add tip
-      // tip.html(function(d) {
-      //     return d.key;
-      // });
-      // g.call(tip);
+      tip.html(function(d) {
+          return d.key;
+      });
+      g.call(tip);
       return bars
     },
     'user_title|total_users': function() {
@@ -247,8 +256,8 @@ let MultiBarScatter = function() {
       });
 
       bars.enter().append('rect')
-        // .on('mouseover', tip.show)
-        // .on('mouseout', tip.hide)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
         .attr('x', function(d, i) {
           return xScale(d)
         })
@@ -268,11 +277,14 @@ let MultiBarScatter = function() {
         .attr('height', function(d) {
           return drawHeight - yScale(grpCts[d])
         })
+        .attr('fill', function(d) {
+          return colors(d)
+        })
       // Add tip
-      // tip.html(function(d) {
-      //     return grpCts[d];
-      // });
-      // g.call(tip);
+      tip.html(function(d) {
+          return grpCts[d];
+      });
+      g.call(tip);
       return bars
     },
     'registration_date|total_users': function() {
@@ -292,34 +304,43 @@ let MultiBarScatter = function() {
         return d.username
       });
       bars.enter().append('rect')
-        .attr('width', 5)
-        .attr('height', 3)
+        .attr('width', 8)
+        .attr('height', 6)
         .attr('x', function(d) {
           return xScale(new Date(+d['registration_date']))
         })
-        // .on('mouseover', tip.show)
-        // .on('mouseout', tip.hide)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide)
         .merge(bars)
         .transition()
         .duration(500)
         .delay(function(d, i) {
           return i * 3
         })
-        .attr('width', 5)
+        .attr('width', 8)
         .attr('x', function(d) {
           return xScale(new Date(+d['registration_date']))
         })
         .attr('y', function(d,i) {
           return yScale(i)
         })
+        .attr('fill', function(d) {
+          return colors(d['user_title'])
+        })
 
       // Add tip
-      // tip.html(function(d, i) {
-      //     return i;
-      // });
-      // g.call(tip);
+      tip.html(function(d, i) {
+          return d.key;
+      });
+      g.call(tip);
       return bars
     }
+  }
+
+  mbs.colors = function(c) {
+    if (!c) return colors
+    colors = c
+    return this
   }
 
   function setAxes() {

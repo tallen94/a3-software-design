@@ -3,7 +3,7 @@ let Graph = function() {
   let width = 900,
     height = 600
   
-  let colors = d3.scaleOrdinal(d3.schemeCategory20)
+  let colors
 
   let simulation = d3.forceSimulation()
     .force('link', d3.forceLink().id(function(d) { return d.id }).distance(100))
@@ -81,6 +81,12 @@ let Graph = function() {
         d.fy = null;
       }
     })
+  }
+
+  n.colors = function(c) {
+    if (!c) return colors
+    colors = c
+    return this
   }
   
   let l = function(selection) {
